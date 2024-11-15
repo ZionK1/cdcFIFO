@@ -1,0 +1,17 @@
+{
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+  },
+  "customizations": {
+    "vscode": {
+	"extensions": ["streetsidesoftware.code-spell-checker",
+		             "AndrewNolte.vscode-system-verilog",
+		             "hediet.vscode-drawio",
+                 "stephanvs.dot",
+                 "tomoki1207.pdf",
+                 "danielroedl.meld-diff",
+                 "bmpenuelas.waveform-render",
+		             "SimonSiefke.svg-preview",]
+    }
+  },
+}

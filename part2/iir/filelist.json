@@ -1,0 +1,12 @@
+{
+    "top": "iir",
+    "files":
+    ["part2/iir/iir.sv",
+     "part2/iir/SB_PLL40_PAD.sv",
+     "provided/sipo.sv",
+     "provided/piso.sv",
+     "provided/dff.sv",
+     "provided/inv.sv",
+     "provided/axis_i2s2_synth.v"
+    ]
+}

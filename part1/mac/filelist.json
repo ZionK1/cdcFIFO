@@ -1,0 +1,15 @@
+{
+    "top": "mac",
+    "files":
+    ["part1/mac/mac.sv"
+    ,"part1/mac/testbench.sv"
+    ,"part1/mac/SB_PLL40_PAD.sv"
+    ,"provided/nonsynth_clock_gen.sv"
+    ,"provided/nonsynth_reset_gen.sv"
+    ,"provided/sipo.sv"
+    ,"provided/piso.sv"
+    ,"provided/dff.sv"
+    ,"provided/inv.sv"
+    ,"provided/axis_i2s2_synth.v"
+    ]
+}
