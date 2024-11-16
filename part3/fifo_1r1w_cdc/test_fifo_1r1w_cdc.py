@@ -524,7 +524,7 @@ async def fill_empty_test(dut, pclk_period, cclk_period):
     om.start()
 
     try:
-        await with_timeout(RisingEdge(dut.pvalid_o), 100, 'ns')
+        await om._rv.is_ready(100)
     except cocotb.result.SimTimeoutError:
         assert 0, f"Test timed out. Testbench is waiting for pvalid_o, but pvalid_o never went high in 100 clock cycles after reset."
 
@@ -564,7 +564,7 @@ async def fuzz_test(dut, pclk_period, cclk_period):
     # it (should, if the circuit is implemented correctly) occur at,
     # or just after the clock edge.
     try:
-        await with_timeout(RisingEdge(dut.pvalid_o), 100, 'ns')
+        await om._rv.is_ready(100)
     except cocotb.result.SimTimeoutError:
         assert 0, f"Test timed out. Testbench is waiting for pvalid_o, but pvalid_o never went high in 100 clock cycles after reset."
 
@@ -599,7 +599,7 @@ async def stream_test(dut, pclk_period, cclk_period):
     # it (should, if the circuit is implemented correctly) occur at,
     # or just after the clock edge.
     try:
-        await with_timeout(RisingEdge(dut.pvalid_o), 100, 'ns')
+        await om._rv.is_ready(100)
     except cocotb.result.SimTimeoutError:
         assert 0, f"Test timed out. Testbench is waiting for pvalid_o, but pvalid_o never went high in 100 clock cycles after reset."
 
