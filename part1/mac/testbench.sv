@@ -11,9 +11,9 @@ module testbench
    // You can use these to parameterize your own module.
    // We need two integer bits. One for encoding 1/0, and one sign bit.
    localparam int_in_lp = 2;
-   localparam frac_in_lp = 11;
+   localparam frac_in_lp = 14;
 
-   localparam int_out_lp = 9;
+   localparam int_out_lp = 10;
    localparam frac_out_lp = 22;
    
    wire       clk_i;
