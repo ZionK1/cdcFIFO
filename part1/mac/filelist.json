@@ -11,5 +11,8 @@
     ,"provided/dff.sv"
     ,"provided/inv.sv"
     ,"provided/axis_i2s2_synth.v"
+    ,"part1/mac/DSP48A1.v"
+    ,"part1/mac/ff_mux.v"
+    ,"part1/mac/mux_4to1.v"
     ]
 }
