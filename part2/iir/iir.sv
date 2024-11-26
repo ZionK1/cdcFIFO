@@ -15,32 +15,56 @@ module iir
   ,input [0:0] ready_i
   );
 
-   wire [/* TODO: Bits, with more fractional after multiplication */] data_lo;
-   wire [/* TODO: Some integer bits, some fractional bits */] sub = (data_li - data_lo[/* TODO: Some integer bits, some fractional bits */]);
+  //  wire [/* TODO: Bits, with more fractional after multiplication */] data_lo;
+  
+  //  wire [/* TODO: Some integer bits, some fractional bits */] sub = (data_li - data_lo[/* TODO: Some integer bits, some fractional bits */]);
 
-   wire [/* TODO: Some integer bits, some fractional bits */] b = {/* TODO: Fixed point value (plus some zero integer bits */};
-   wire [/* TODO: Bits, with more fractional after multiplication */] mul = $signed(sub) * $signed(b);
+  //  wire [/* TODO: Some integer bits, some fractional bits */] b = {/* TODO: Fixed point value (plus some zero integer bits */};
+  //  wire [/* TODO: Bits, with more fractional after multiplication */] mul = $signed(sub) * $signed(b);
 
-   wire [/* TODO: Bits, with more fractional after multiplication and addition*/] acc = data_lo + mul;
+  //  wire [/* TODO: Bits, with more fractional after multiplication and addition*/] acc = data_lo + mul;
 
-   wire [/* TODO: Some integer bits, some fractional bits */] data_li;
+  //  wire [/* TODO: Some integer bits, some fractional bits */] data_li;
 
-   assign data_li = {/*TODO: Zero Pad for fractional bits */};
+  //  assign data_li = {/*TODO: Zero Pad for fractional bits */};
 
-   assign data_o = data_lo[/*TODO: Lop off fractional bits*/];
+  //  assign data_o = data_lo[/*TODO: Lop off fractional bits*/];
 
-   elastic
-     #(.width_p(/* TODO: Bits, with more fractional after multiplication*/))
-   elastic_inst
-     (.clk_i                            (clk_i)
-     ,.reset_i                          (reset_i)
+  // take integer bits of data_i and pad 0s for fractional bits
+  wire [9:-17] data_li;
+  assign data_li = {data_i, 17'b0};
+  
+  wire [9:-22] data_lo;
 
-     ,.data_i                           (/* TODO: Bits, with more fractional after multiplication*/])
-     ,.valid_i                          (valid_i)
-     ,.ready_o                          (ready_o)
+  // subtract signed new data_li with prev data_lo (both 9:-16)
+  wire [9:-17] sub = ($signed(data_li) - data_lo[9:-17]);
 
-     ,.valid_o                          (valid_o)
-     ,.data_o                           (data_lo)
-     ,.ready_i                          (ready_i));
+  // pad signed bit then 5 bits for 0.921875
+  wire [0:-5] b = {1'b0, 1'b1, 1'b1, 1'b0, 1'b1, 1'b1};
+
+  // multiplying sub and b = [9 + 0, -17 + -5] = [9:-22]
+  wire [9:-22] mul = $signed(sub) * $signed(b);
+
+  // acc: prev data + new product
+  wire [9:-22] acc = data_lo + mul;
+
+  elastic
+    #(.width_p(32)
+     ,.datapath_reset_p(1'b1)
+     ,.datapath_gate_p(1'b1))
+  elastic_inst
+    (.clk_i                            (clk_i)
+    ,.reset_i                          (reset_i)
+
+    ,.data_i                           (acc)
+    ,.valid_i                          (valid_i)
+    ,.ready_o                          (ready_o)
+
+    ,.valid_o                          (valid_o)
+    ,.data_o                           (data_lo)
+    ,.ready_i                          (ready_i));
+
+  // lop off fractional bits here
+  assign data_o = data_lo[width_p-1:0];
 
 endmodule

@@ -7,6 +7,7 @@
      "provided/piso.sv",
      "provided/dff.sv",
      "provided/inv.sv",
-     "provided/axis_i2s2_synth.v"
+     "provided/axis_i2s2_synth.v",
+     "part2/iir/elastic.sv"
     ]
 }
