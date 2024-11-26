@@ -2,5 +2,8 @@
     "top": "fifo_1r1w",
     "files":
      ["part3/fifo_1r1w/fifo_1r1w.sv"
+     ,"part3/fifo_1r1w/elastic.sv"
+     ,"part3/fifo_1r1w/counter.sv"
+     ,"part3/fifo_1r1w/ram_1r1w_sync.sv"
     ]
 }
