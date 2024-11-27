@@ -11,7 +11,7 @@
      ,"part3/fifo_1r1w_cdc/bin2gray.sv"
      ,"part3/fifo_1r1w_cdc/gray2bin.sv"
      ,"part3/fifo_1r1w/counter.sv"
-     ,"part3/fifo_1r1w/elastic.sv"
-     ,"part3/fifo_1r1w/ram_1r1w_sync.sv"
+     ,"part3/fifo_1r1w_cdc/inelastic.sv"
+     ,"part3/fifo_1r1w_cdc/ram_1r1w_async.sv"
      ]
 }
