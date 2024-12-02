@@ -25,7 +25,7 @@ module ram_1r1w_async
 
     // wire [bar:0] foo [baz:0];
     //$readmemh({`HEXPATH, filename_p}, /* name of your variable here, e.g. foo */ , 0, /* parameter value here */);
-    $readmemh({`HEXPATH, filename_p}, mem , 0, depth_p-1);
+    //$readmemh({`HEXPATH, filename_p}, mem , 0, depth_p-1);
 
     // In order to get the memory contents in iverilog you need to run this for loop during initialization:
     // synopsys translate_off
