@@ -177,17 +177,31 @@ module top
      );
 
    // Your code goes here
+  iir 
+    #(.width_p(24))
+  iir_inst (
+    .clk_i(clk_o),
+    .reset_i(reset_r),
+    .valid_i(valid_li),
+    .data_i(data_right_li),
+    .ready_o(ready_lo),
+    .valid_o(valid_lo),
+    .data_o(data_right_lo),
+    .ready_i(ready_li)
+  );
+
+  assign data_left_lo = data_right_lo;
 
    // For the FIFO, you must drive all of these signals to implement backpressure
    // For Lab 3, sinusoid you will need to drive valid_lo and check ready_li to
    // produce audio. However, you should AlSO drive ready_lo to
    // constant 1 so that the audio continues to stream in (even though
    // you ignore it.
-   assign valid_lo = valid_li;
-   assign ready_lo = ready_li;
+  //  assign valid_lo = valid_li;
+  //  assign ready_lo = ready_li;
 
-   // You should drive right_lo and left_lo
-   assign data_right_lo = data_right_li;
-   assign data_left_lo = data_left_li;
+  //  // You should drive right_lo and left_lo
+  //  assign data_right_lo = data_right_li;
+  //  assign data_left_lo = data_left_li;
                          
 endmodule

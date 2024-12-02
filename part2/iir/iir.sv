@@ -31,22 +31,27 @@ module iir
   //  assign data_o = data_lo[/*TODO: Lop off fractional bits*/];
 
   // take integer bits of data_i and pad 0s for fractional bits
-  wire [9:-17] data_li;
-  assign data_li = {data_i, 17'b0};
+  //wire [9:-17] data_li;
+  wire [width_p - 1:-(27 - width_p)] data_li;
+  //assign data_li = {data_i, 17'b0};
+  assign data_li = {data_i, {(27 - width_p){1'b0}}};
   
-  wire [9:-22] data_lo;
+  //wire [9:-22] data_lo;
+  wire [width_p - 1:-(32 - width_p)] data_lo;
 
   // subtract signed new data_li with prev data_lo (both 9:-16)
-  wire [9:-17] sub = ($signed(data_li) - data_lo[9:-17]);
+  // wire [9:-17] sub = ($signed(data_li) - data_lo[9:-17]);
+  wire [width_p - 1:-(27 - width_p)] sub = ($signed(data_li) - data_lo[9:-17]);
 
   // pad signed bit then 5 bits for 0.921875
   wire [0:-5] b = {1'b0, 1'b1, 1'b1, 1'b0, 1'b1, 1'b1};
 
   // multiplying sub and b = [9 + 0, -17 + -5] = [9:-22]
-  wire [9:-22] mul = $signed(sub) * $signed(b);
+  // wire [9:-22] mul = $signed(sub) * $signed(b);
+  wire [width_p - 1:-(32 - width_p)] mul = $signed(sub) * $signed(b);
 
   // acc: prev data + new product
-  wire [9:-22] acc = data_lo + mul;
+  wire [width_p - 1:-(32 - width_p)] acc = data_lo + mul;
 
   elastic
     #(.width_p(32)
