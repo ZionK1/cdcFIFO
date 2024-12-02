@@ -147,7 +147,8 @@ module fifo_1r1w_cdc
   // Instantiate async RAM
   ram_1r1w_async #(
     .width_p(width_p),
-    .depth_p(depth_p)
+    .depth_p(depth_p),
+    .filename_p()
   ) ram_inst (
     .clk_i(cclk_i),
     .reset_i(creset_i),
