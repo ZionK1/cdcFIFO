@@ -10,11 +10,11 @@ module testbench
 
    // You can use these to parameterize your own module.
    // We need two integer bits. One for encoding 1/0, and one sign bit.
-   localparam int_in_lp = 8;
-   localparam frac_in_lp = 8;
+   localparam int_in_lp = 2;
+   localparam frac_in_lp = 14;
 
-   localparam int_out_lp = 16;
-   localparam frac_out_lp = 16;
+   localparam int_out_lp = 10;
+   localparam frac_out_lp = 22;
    
    wire       clk_i;
    bit        reset_i;
@@ -24,8 +24,8 @@ module testbench
    bit        reset_il;
    assign reset_i = _reset_i | reset_il;
 
-   logic signed [int_in_lp - 1 : -frac_in_lp] a_il;
-   logic signed [int_in_lp - 1 : -frac_in_lp] b_il;
+   logic  [int_in_lp - 1 : -frac_in_lp] a_il;
+   logic  [int_in_lp - 1 : -frac_in_lp] b_il;
 
    // I'm using bit here to get a 0/1 type
    bit                                 valid_il;
@@ -341,8 +341,8 @@ module testbench
 
    // Model state
    logic signed [int_out_lp - 1 : -frac_out_lp]   acc_r;
-   logic signed [int_in_lp - 1 : -frac_out_lp]    a_q [$];
-   logic signed [int_in_lp - 1 : -frac_out_lp]    b_q [$];
+   logic [int_in_lp - 1 : -frac_out_lp]    a_q [$];
+   logic [int_in_lp - 1 : -frac_out_lp]    b_q [$];
 
    // Internal temp varaiables
    logic signed [int_in_lp - 1 : -frac_in_lp]     a_tl;
