@@ -64,7 +64,7 @@ module mac
 
 
   logic signed [int_out_lp - 1 : -frac_out_lp] accum, data_r;
-  logic signed [int_in_lp * 2: -(frac_in_lp * 2)] prod;
+  logic signed [(int_in_lp * 2)-1: -(frac_in_lp * 2)] prod;
 
   always_comb begin
     prod = a_i * b_i;
