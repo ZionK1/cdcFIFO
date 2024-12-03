@@ -81,7 +81,7 @@ module top
     #(.FEEDBACK_PATH("SIMPLE")
      ,.PLLOUT_SELECT("GENCLK")
      ,.DIVR(4'b0000)
-     ,.DIVF(7'b1000011)
+     ,.DIVF(7'd59)
      ,.DIVQ(3'b101)
      ,.FILTER_RANGE(3'b001)
      )
@@ -179,16 +179,99 @@ module top
 
    // Your code goes here
 
+  // sinusoid
+  logic [11:0] sine_o;
+  sinusoid sinusoid_inst (
+    .clk_i(clk_o),
+    .reset_i(reset_r),
+    .ready_i(valid_li & ready_lo),    
+    .data_o(sine_o),
+    .valid_o()
+  );
+
+  assign valid_lo = valid_li;
+  assign data_left_lo = {sine_o, 12'b0};
+
+  // mac
+  logic signed [31:0] mac_o;
+  logic [0:0] zilch, mac_valid, mac_ready;
+  mac
+    #(.int_in_lp(1),                  // CHECK THESE
+      .frac_in_lp(11),
+      .int_out_lp(10),
+      .frac_out_lp(22))
+  mac_inst (
+    .clk_i(clk_o),
+    .reset_i(counter_o == 44001),                  // CHECK THIS
+    .a_i(sine_o),
+    .b_i(data_left_li[23:12]),        // CHECK THESE
+    .valid_i(valid_li),
+    .ready_o(ready_lo),
+    .valid_o(mac_valid),
+    .ready_i(1'b1),
+    .data_o(mac_o)
+  );
+
+  // save and restart logic
+  logic [15:0] counter_o;             //  CHECK THESE
+  counter 
+    #(.width_p(16)
+     ,.sat_val_p(16'd44100))
+  counter_inst(
+    .clk_i(clk_o),
+    .reset_i(reset_r),
+    .up_i(valid_li & ready_lo),
+    .down_i(1'b0),
+    .count_o(counter_o)
+  );
+
+  //assign zilch = counter_o == 44100;  // CHECK THIS
+
+  logic signed [31:0] elastic_o;
+  /*
+  elastic 
+    #(.width_p(32)
+    ,.datapath_gate_p(1'b1))
+  elastic_inst(
+    .clk_i(clk_o),
+    .reset_i(reset_r),
+    .data_i(mac_o),
+    .valid_i(zilch),                  // CHECK THESE
+    .ready_o(),
+    .valid_o(),
+    .ready_i(1'b1),
+    .data_o(elastic_o)
+  ); */
+
+  always_ff @(posedge clk_o) begin
+    if (reset_r) begin
+      elastic_o <= '0;
+    end else if (counter_o == 44000) begin
+      elastic_o <= mac_o;
+    end
+  end
+
+  // ssd
+  logic [31:0] ssd_i;
+  assign ssd_i = (elastic_o[31]) ? -elastic_o : elastic_o;
+
+  hex2ssd ssd_inst (                  // CHECK THESE
+    .hex_i(ssd_i[25:22]),
+    .ssd_o(ssd_o[6:0])
+  );
+
+  assign ssd_o[7] = 1'b1;
+
    // For the FIFO, you must drive all of these signals to implement backpressure
    // For Lab 3, sinusoid you will need to drive valid_lo and check ready_li to
    // produce audio. However, you should AlSO drive ready_lo to
    // constant 1 so that the audio continues to stream in (even though
    // you ignore it.
-   assign valid_lo = valid_li;
-   assign ready_lo = ready_li;
+  //  assign valid_lo = valid_li;
+  //  assign ready_lo = ready_li;
 
-   // You should drive right_lo and left_lo
-   assign data_right_lo = data_right_li;
-   assign data_left_lo = data_left_li;
+  //  // You should drive right_lo and left_lo
+  //  assign data_right_lo = data_right_li;
+  //  assign data_left_lo = data_left_li;
                          
 endmodule

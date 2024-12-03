@@ -14,5 +14,10 @@
     ,"part1/mac/DSP48A1.v"
     ,"part1/mac/ff_mux.v"
     ,"part1/mac/mux_4to1.v"
+    ,"part1/mac/ram_1r1w_async.sv"
+    ,"part1/mac/sinusoid.sv"
+    ,"part1/mac/counter.sv"
+    ,"part1/mac/elastic.sv"
+    ,"part1/mac/hex2ssd.sv"
     ]
 }

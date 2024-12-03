@@ -14,7 +14,7 @@ module DSP48A1 #(
     parameter B_INPUT = "DIRECT", // Selects between direct (B) input and cascaded input (BCIN)
     parameter RSTTYPE = "SYNC" // Selects whether all registers have a synchronous or asynchronous reset capability
     ) (
-    input [17:0] A, B, D,
+    input signed [17:0] A, B, D,
     input [47:0] C,
     input CLK, // DSP clock 
     input CARRYIN, // carry input to the post-adder/subtracter
@@ -24,7 +24,7 @@ module DSP48A1 #(
     input [47:0] PCIN, // Cascade input for Port P
     output [17:0] BCOUT, // Cascade output for Port B
     output [47:0] PCOUT, // Cascade output for Port P
-    output [47:0] P, // Primary data output from the post-adder/subtracter
+    output signed [47:0] P, // Primary data output from the post-adder/subtracter
     output [35:0] M, // 36-bit buffered multiplier data output, routable to the FPGA logic
     output CARRYOUT, // Cascade carry out signal from post-adder/subtracter. This output is to be connected only to CARRYIN of adjacent DSP48A1 if multiple DSP blocks are used
     output CARRYOUTF // Carry out signal from post-adder/subtracter for use in the FPGA logic. It is a copy of the CARRYOUT signal that can be routed to the user logic
@@ -33,7 +33,7 @@ module DSP48A1 #(
     wire [17:0] BCIN; // The BCIN input is the direct cascade from the adjacent DSP48A1 BCOUT
     wire [17:0] B_Mux, A0_REG, A1_REG, B0_REG, B1_REG, D_REG, Pre_Add_Sub, B_add_sub_mux;
     wire [35:0] Mult, M_REG;
-    wire [47:0] C_REG, D_A_B, X_Mux, Z_Mux, Post_Add_Sub;
+    wire signed [47:0] C_REG, D_A_B, X_Mux, Z_Mux, Post_Add_Sub;
     wire Carry_Cascade, Carry_In_REG, Carry_Out_Post;
 
     assign B_Mux = (B_INPUT == "DIRECT") ? B : (B_INPUT == "CASCADE") ? BCIN : 0; // B input MUX, either direct (B) input or cascaded input (BCIN)
