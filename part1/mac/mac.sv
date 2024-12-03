@@ -34,7 +34,7 @@ module mac
   assign ready_o = !valid_r || ready_i;
   assign valid_o = valid_r;
 
-  
+  /*
   DSP48A1 #(
     .A0REG(1'b0),
     .A1REG(1'b0),
@@ -59,9 +59,9 @@ module mac
     .RSTP(reset_i),
     .CEP(ready_o && valid_i),
     .P(data_o) // No lint error finally, able to pass to c_o directly
-  ); 
+  ); */
 
-  /*
+
   logic signed [int_out_lp - 1 : -frac_out_lp] accum, data_r;
   logic signed [int_in_lp * 2: -(frac_in_lp * 2)] prod;
 
@@ -89,5 +89,4 @@ module mac
   end
 
   assign data_o = data_r;
-  */
 endmodule
