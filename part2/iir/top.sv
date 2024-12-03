@@ -177,20 +177,63 @@ module top
      );
 
    // Your code goes here
+  logic [9:0] iir_out1, iir_out2, iir_out3, iir_out4;
+  logic [0:0] valid1, valid2, valid3, ready1, ready2, ready3;
+
   iir 
-    #(.width_p(24))
+    #(.width_p(10))
   iir_inst (
     .clk_i(clk_o),
     .reset_i(reset_r),
     .valid_i(valid_li),
-    .data_i(data_right_li),
+    .data_i(data_right_li[23:14]),
     .ready_o(ready_lo),
+    .valid_o(valid1),
+    .data_o(iir_out1),
+    .ready_i(ready1)
+  );
+
+  iir 
+    #(.width_p(10))
+  iir_inst2 (
+    .clk_i(clk_o),
+    .reset_i(reset_r),
+    .valid_i(valid1),
+    .data_i(iir_out1),
+    .ready_o(ready1),
+    .valid_o(valid2),
+    .data_o(iir_out2),
+    .ready_i(ready2)
+  );
+
+  iir 
+    #(.width_p(10))
+  iir_inst3 (
+    .clk_i(clk_o),
+    .reset_i(reset_r),
+    .valid_i(valid2),
+    .data_i(iir_out2),
+    .ready_o(ready2),
+    .valid_o(valid3),
+    .data_o(iir_out3),
+    .ready_i(ready3)
+  );
+
+  iir 
+    #(.width_p(10))
+  iir_inst4 (
+    .clk_i(clk_o),
+    .reset_i(reset_r),
+    .valid_i(valid3),
+    .data_i(iir_out3),
+    .ready_o(ready3),
     .valid_o(valid_lo),
-    .data_o(data_right_lo),
+    .data_o(iir_out4),
     .ready_i(ready_li)
   );
 
-  assign data_left_lo = data_right_lo;
+  assign data_right_lo = {iir_out4, 14'b0};
+  assign data_left_lo = {iir_out4, 14'b0};
 
    // For the FIFO, you must drive all of these signals to implement backpressure
    // For Lab 3, sinusoid you will need to drive valid_lo and check ready_li to
