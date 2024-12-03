@@ -24,8 +24,8 @@ module testbench
    bit        reset_il;
    assign reset_i = _reset_i | reset_il;
 
-   logic signed [int_in_lp - 1 : -frac_in_lp] a_il;
-   logic signed [int_in_lp - 1 : -frac_in_lp] b_il;
+   logic [int_in_lp - 1 : -frac_in_lp] a_il;
+   logic [int_in_lp - 1 : -frac_in_lp] b_il;
 
    // I'm using bit here to get a 0/1 type
    bit                                 valid_il;
@@ -354,24 +354,21 @@ module testbench
       if(reset_i) begin
          a_q.delete();
          b_q.delete();
-         acc_r <= 0;
       end else if ($isunknown(ready_o)) begin
          // Check for resolvable ready_o (we control valid_il)
          $error("DUT produced unresolvable value on ready_o");
          `FINISH_WITH_FAIL;
       end else if (valid_il & ready_o) begin
          // If the core has ingested data, ingest it into our model.
-         // These are now just for tracking the occupancy of the mac module (there should only be one input in flight)
          a_q.push_back(a_il);
          b_q.push_back(b_il);
-         acc_r <= acc_r + (a_il * b_il);
       end
    end
 
    // Model "Output"/Producer Checker
    always @(posedge clk_i) begin
       if(reset_i) begin
-         // Do nothing
+         acc_r = 0;
       end else if ($isunknown(valid_o)) begin
          // Check for resolvable valid_o (we control ready_il)
          $error("DUT produced unresolvable value on valid_o");
@@ -393,6 +390,8 @@ module testbench
             // 3. These signals are not used anywhere else.
             a_tl = a_q.pop_front();
             b_tl = b_q.pop_front();
+            mul_tl = a_tl * b_tl;
+            acc_r += mul_tl;
             
             if(acc_r !== data_o) begin
                $error("DUT output data does not match model data.\

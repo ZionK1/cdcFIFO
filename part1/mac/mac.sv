@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module mac
  #(parameter int_in_lp = 1
   ,parameter frac_in_lp = 11
@@ -70,9 +71,9 @@ module mac
   end
 
   generate
-      if ((int_in_lp*2) == int_out_lp) begin
+      if ((int_in_lp*2) == int_out_lp) begin : gen_accum
         assign accum = prod + data_r;
-      end else begin
+      end else begin : gen_accum2
         assign accum = {{{(int_out_lp-(int_in_lp*2)){prod[int_in_lp-1]}}}, prod} + data_r;
       end
   endgenerate
@@ -88,5 +89,5 @@ module mac
     end
   end
 
-  assign data_o = data_r;
+  assign data_o = data_r; 
 endmodule
