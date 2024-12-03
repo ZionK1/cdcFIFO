@@ -178,7 +178,7 @@ module top
      );
 
    // Your code goes here
-  /*
+
   // sinusoid
   logic [11:0] sine_o;
   sinusoid sinusoid_inst (
@@ -261,7 +261,6 @@ module top
   );
 
   assign ssd_o[7] = 1'b1;
-  */
 
    // For the FIFO, you must drive all of these signals to implement backpressure
    // For Lab 3, sinusoid you will need to drive valid_lo and check ready_li to
