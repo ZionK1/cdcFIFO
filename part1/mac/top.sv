@@ -202,7 +202,7 @@ module top
       .frac_out_lp(22))
   mac_inst (
     .clk_i(clk_o),
-    .reset_i(counter_o == 44001),                  // CHECK THIS
+    .reset_i(counter_o == 44001),     // CHECK THIS
     .a_i(sine_o),
     .b_i(data_left_li[23:12]),        // CHECK THESE
     .valid_i(valid_li),
