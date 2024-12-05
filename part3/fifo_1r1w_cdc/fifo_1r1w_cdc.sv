@@ -21,8 +21,8 @@ module fifo_1r1w_cdc
   // Write your code here
   localparam depth_p = 1 << depth_log2_p;
 
-  logic [depth_log2_p:0] rd_ptr_r, rd_ptr_sync1, rd_ptr_sync2, rd_b2g_o, rd_g2b_o;
-  logic [depth_log2_p:0] wr_ptr_r, wr_ptr_sync1, wr_ptr_sync2, wr_b2g_o, wr_g2b_o;
+  logic [depth_log2_p:0] rd_ptr_n, rd_ptr_r, rd_ptr_delay, rd_ptr_sync1, rd_ptr_sync2, rd_b2g_o, rd_g2b_o;
+  logic [depth_log2_p:0] wr_ptr_n, wr_ptr_r, wr_ptr_delay, wr_ptr_sync1, wr_ptr_sync2, wr_b2g_o, wr_g2b_o;
 
   // Forwarding path and other registers
   logic [0:0] empty, full;
@@ -32,7 +32,7 @@ module fifo_1r1w_cdc
 
   // Addresses
   logic [depth_log2_p-1:0] rd_addr, wr_addr;
-  assign rd_addr = rd_ptr_r[depth_log2_p-1:0]; 
+  assign rd_addr = rd_ptr_n[depth_log2_p-1:0]; 
   assign wr_addr = wr_ptr_r[depth_log2_p-1:0];
 
   // empty uses wr_g2b_o and rd_ptr_r
@@ -42,14 +42,43 @@ module fifo_1r1w_cdc
   assign full = (rd_g2b_o[depth_log2_p-1:0] == wr_ptr_r[depth_log2_p-1:0]) && (rd_g2b_o[depth_log2_p] != wr_ptr_r[depth_log2_p]);
 
   // read counter
+  always_ff @(posedge cclk_i) begin
+    if (creset_i) begin
+      wr_ptr_r <= '0;
+    end else begin
+      wr_ptr_r <= wr_ptr_n;
+    end
+  end
+
+  always_ff @(posedge pclk_i) begin
+    if (preset_i) begin
+      rd_ptr_r <= '0;
+    end else begin
+      rd_ptr_r <= rd_ptr_n;
+    end
+  end
+
+  always_comb begin
+    wr_ptr_n = wr_ptr_r;
+    rd_ptr_n = rd_ptr_r;
+
+    if (cvalid_i && cready_o) begin
+      wr_ptr_n = wr_ptr_r + 1;
+    end
+
+    if (pready_i && pvalid_o) begin
+      rd_ptr_n = rd_ptr_r + 1;
+    end
+  end
+  /*
   counter #(.width_p(depth_log2_p+1)) 
   rd_counter ( 
     .clk_i(pclk_i),
     .reset_i(preset_i),
     .up_i(pready_i & pvalid_o & !empty),
     .down_i(1'b0),
-    .count_o(rd_ptr_r)
-  );
+    .count_o(rd_ptr_n)
+  ); */
 
   // read ptr bin 2 gray
   bin2gray #(.width_p(depth_log2_p+1)) read_b2g (
@@ -58,6 +87,7 @@ module fifo_1r1w_cdc
   );
 
   // read ptr synchronizers
+  /*
   generate
     for (genvar i = 0; i < (depth_log2_p+1); i++) begin : rd_sync
       dff rd_sync1 (
@@ -75,7 +105,27 @@ module fifo_1r1w_cdc
         .q_o(rd_ptr_sync2[i])
       );
     end
-  endgenerate
+  endgenerate */
+  /*
+  always_ff @(posedge pclk_i) begin
+    rd_ptr_delay <= rd_b2g_o;
+  end */
+
+  always_ff @(posedge cclk_i) begin
+    if (creset_i) begin
+      rd_ptr_sync1 <= '0;
+    end else begin
+      rd_ptr_sync1 <= rd_b2g_o;
+    end
+  end
+
+  always_ff @(posedge cclk_i) begin
+    if (creset_i) begin
+      rd_ptr_sync2 <= '0;
+    end else begin
+      rd_ptr_sync2 <= rd_ptr_sync1;
+    end
+  end
 
   // read ptr gray 2 binary
   gray2bin #(.width_p(depth_log2_p+1))
@@ -85,14 +135,15 @@ module fifo_1r1w_cdc
   );
 
   // write counter
+  /*
   counter #(.width_p(depth_log2_p+1)) 
   wr_counter ( 
     .clk_i(cclk_i),
     .reset_i(creset_i),
     .up_i(cvalid_i & cready_o & !full),
     .down_i(1'b0),
-    .count_o(wr_ptr_r)
-  );
+    .count_o(wr_ptr_n)
+  ); */
 
   // write ptr bin 2 gray
   bin2gray #(.width_p(depth_log2_p+1)) 
@@ -102,6 +153,7 @@ module fifo_1r1w_cdc
   );
 
   // write ptr synchronizers
+  /*
   generate
     for (genvar i = 0; i < (depth_log2_p+1); i++) begin : wr_sync
       dff wr_sync1 (
@@ -119,7 +171,28 @@ module fifo_1r1w_cdc
         .q_o(wr_ptr_sync2[i])
       );
     end
-  endgenerate
+  endgenerate */
+  
+  /*
+  always_ff @(posedge cclk_i) begin
+    wr_ptr_delay <= wr_b2g_o;
+  end */
+
+  always_ff @(posedge pclk_i) begin
+    if (preset_i) begin
+      wr_ptr_sync1 <= '0;
+    end else begin
+      wr_ptr_sync1 <= wr_b2g_o;
+    end
+  end
+
+  always_ff @(posedge pclk_i) begin
+    if (preset_i) begin
+      wr_ptr_sync2 <= '0;
+    end else begin
+      wr_ptr_sync2 <= wr_ptr_sync1;
+    end
+  end
 
   // wr ptr gray 2 binary
   gray2bin #(.width_p(depth_log2_p+1))
@@ -129,21 +202,22 @@ module fifo_1r1w_cdc
   );
   
   // Instantiate sync RAM
-  /*ram_1r1w_sync #(
+  ram_1r1w_sync #(
     .width_p(width_p),
     .depth_p(depth_p)
   ) ram_inst (
     .cclk_i(cclk_i),
     .pclk_i(pclk_i),
-    .reset_i(creset_i),
-    .wr_valid_i(cready_i && cvalid_o),
+    .reset_i(1'b0),
+    .wr_valid_i(cvalid_i & cready_o),
     .wr_data_i(cdata_i),
-    .wr_addr_i(wr_addr),
+    .wr_addr_i(wr_addr[depth_log2_p-1:0]),
     .rd_valid_i(1'b1), 
-    .rd_addr_i(rd_addr),
+    .rd_addr_i(rd_addr[depth_log2_p-1:0]),
     .rd_data_o(ram_data)
-  ); */
+  ); 
  
+  /*
   // Instantiate async RAM
   ram_1r1w_async #(
     .width_p(width_p),
@@ -157,7 +231,7 @@ module fifo_1r1w_cdc
     .wr_addr_i(wr_addr[depth_log2_p-1:0]),
     .rd_addr_i(rd_addr[depth_log2_p-1:0]),
     .rd_data_o(ram_data)
-  ); 
+  ); */
 
   /*
   inelastic #(.width_p(width_p))
