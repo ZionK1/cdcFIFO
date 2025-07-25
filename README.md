@@ -1,4 +1,5 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/CAhcQgr6)
-# Lab Assignment 7
+# Clock Domain Crossing FIFO
 
-Click `Code` > `Codespaces` > `Create codespace on main` to start coding!
+This repository contains SystemVerilog code for a Clock Domain Crossing FIFO in the part3 directory. The top module demonstrates the functioning CDC FIFO by instantiating two respective FIFOs for upstream and downstream data flow tied to an I2S2 and serial interface for audio output.
+
+Click `Code` > `Codespaces` > `Create codespace on main` to build the 
